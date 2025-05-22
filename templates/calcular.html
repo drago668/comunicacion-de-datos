@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<style>
+    .radio-card {
+        max-width: 600px;
+        margin: 2rem auto;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+    }
+
+    .radio-card h2 {
+        margin-bottom: 1rem;
+        color: #2c3e50;
+        text-align: center;
+    }
+
+    .radio-card p {
+        margin-bottom: 1rem;
+        color: #34495e;
+        line-height: 1.5;
+    }
+
+    .btn-primary {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        background: #3498db;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+        background: #2980b9;
+    }
+
+    .results {
+        margin-top: 2rem;
+        background: #ecf0f1;
+        padding: 1.5rem;
+        border-radius: 6px;
+    }
+
+    .results ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .results li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #bdc3c7;
+    }
+
+    .results li:last-child {
+        border-bottom: none;
+    }
+
+    .theory-section {
+        margin-top: 2rem;
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .theory-section h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .theory-section p {
+        margin-bottom: 1rem;
+        color: #34495e;
+        line-height: 1.6;
+    }
+
+    .theory-section img {
+        display: block;
+        margin: 1rem auto;
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<h2>Calculadora de Radioenlace</h2>
+
+<section class="theory-section">
+    <h3>¿Qué es un Radioenlace?</h3>
+    <p>
+        Un radioenlace es un sistema de comunicación inalámbrica que utiliza ondas de radio para transmitir señales entre un transmisor y un receptor. 
+        Este tipo de comunicación es común en redes de telecomunicaciones, enlaces de datos y sistemas satelitales.
+    </p>
+    <img src="{% static '/img/radioenlace_general.jpg' %}" alt="Esquema general de un radioenlace">
+    static
+    <h3>Aspectos Clave de un Radioenlace</h3>
+    <p>
+        Los radioenlaces se diseñan considerando los siguientes factores:
+    </p>
+    <ul>
+        <li><strong>Pérdida de espacio libre (FSL):</strong> Atenuación de la señal debido a la dispersión en el espacio.</li>
+        <li><strong>Ganancia de las antenas:</strong> Mejora de la señal a través de la eficiencia de las antenas transmisoras y receptoras.</li>
+        <li><strong>Potencia recibida:</strong> Nivel de la señal en el receptor, calculada considerando pérdidas y ganancias.</li>
+        <li><strong>Margen de enlace:</strong> Reserva adicional para garantizar el funcionamiento bajo condiciones adversas.</li>
+        <li><strong>Pérdidas adicionales:</strong> Atenuación causada por obstáculos, clima o interferencias.</li>
+    </ul>
+    <img src="{% static 'img/fsl_diagram.jpg' %}" alt="Diagrama de Pérdida de Espacio Libre">
+    <img src="{% static 'img/antena_transmisora.jpg' %}" alt="Antena transmisora y receptora">
+</section>
+
+<section class="contrato" id="contrato">
+    <div class="radio-card">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn-primary" type="submit">Calcular</button>
+        </form>
+    </div>
+</section>
+
+{% if resultado %}
+<div class="results">
+<h3>Resultados:</h3>
+<ul>
+    <li>FSL (dB): {{ resultado.fsl }}</li>
+    <li>Margen de enlace (dB): {{ resultado.margen }}</li>
+    <li>Potencia recibida Pr (dBm): {{ resultado.pr }}</li>
+    <li>Reserva sobre sensibilidad (dB): {{ resultado.reserva }}</li>
+</ul>
+</div>
+{% endif %}
+{% endblock %}

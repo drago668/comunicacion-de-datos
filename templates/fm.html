@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}antenas{% endblock %}
+
+{% block content %}
+
+<script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css">
+    <style>
+        .slider-container {
+            margin: 20px;
+        }
+        #sliders {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .slider {
+            width: 45%;
+            margin-bottom: 20px;
+        }
+    </style>
+    <h1>Frequency Modulation (FM) </h1>
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 700px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+        <h2 style="color: #2C3E50; text-align: center;">¿Qué es la Modulación de Frecuencia (FM)?</h2>
+        <p>
+          <strong>FM</strong>, o Modulación de Frecuencia, es una técnica de modulación analógica donde la información se transmite variando la frecuencia de una señal portadora de acuerdo con la amplitud de la señal de entrada (o señal moduladora). La amplitud de la portadora permanece constante.
+        </p>
+        
+        <h3 style="color: #2C3E50;">¿Cómo funciona?</h3>
+        <p>
+          En FM, la frecuencia de la señal portadora cambia de manera proporcional a la amplitud de la señal de entrada:
+        </p>
+        <ul>
+          <li><strong>Frecuencia alta:</strong> Cuando la señal moduladora tiene un valor alto.</li>
+          <li><strong>Frecuencia baja:</strong> Cuando la señal moduladora tiene un valor bajo.</li>
+        </ul>
+        <p>
+          La señal modulada en frecuencia se puede expresar matemáticamente como:
+        </p>
+        <div style="background-color: #e8f4fc; padding: 10px; border-radius: 5px; font-family: 'Courier New', monospace;">
+          s(t) = A<sub>c</sub> sin(2π[f<sub>c</sub> + Δf·m(t)]t)
+        </div>
+        <p>
+          Donde:
+          <ul>
+            <li><strong>A<sub>c</sub>:</strong> Amplitud de la señal portadora (constante).</li>
+            <li><strong>f<sub>c</sub>:</strong> Frecuencia de la portadora.</li>
+            <li><strong>Δf:</strong> Desviación de frecuencia (proporcional a la amplitud de la señal moduladora).</li>
+            <li><strong>m(t):</strong> Señal moduladora (la información que se desea transmitir).</li>
+          </ul>
+        </p>
+        
+        <h3 style="color: #2C3E50;">Ventajas de FM</h3>
+        <p>
+          - Más resistente al ruido y a las interferencias que la modulación AM.<br>
+          - Utilizado en aplicaciones como la radio FM, televisión y telecomunicaciones.
+        </p>
+        
+        <h3 style="color: #2C3E50;">Limitaciones</h3>
+        <p>
+          - Requiere un mayor ancho de banda en comparación con AM.<br>
+          - Equipos de transmisión y recepción más complejos.
+        </p>
+        
+        <h3 style="color: #2C3E50;">Ejemplo gráfico</h3>
+        <p>
+          Supongamos que la señal moduladora es una onda senoidal. En FM, la frecuencia de la señal portadora varía según la amplitud de la onda moduladora.
+        </p>
+        <p style="text-align: center;">
+          <img src="{% static 'img/fm.png'%}" alt="Ejemplo de FM" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 5px;">
+        </p>
+        
+        <p style="text-align: center; font-style: italic;">
+          ¡FM es una técnica clave en la transmisión de datos que mejora la calidad y reduce las interferencias!
+        </p>
+      </div>
+      <h1>Frequency Modulation (FM) ejemplo grafico </h1>
+    <div id="sliders">
+        <div class="slider-container">
+            <label for="fc-slider">Carrier Frequency (fc)</label>
+            <div id="fc-slider" class="slider"></div>
+            <span id="fc-value">1000</span> Hz
+        </div>
+        <div class="slider-container">
+            <label for="fm-slider">Modulating Frequency (fm)</label>
+            <div id="fm-slider" class="slider"></div>
+            <span id="fm-value">100</span> Hz
+        </div>
+        <div class="slider-container">
+            <label for="beta-slider">Modulation Index (β)</label>
+            <div id="beta-slider" class="slider"></div>
+            <span id="beta-value">5</span>
+        </div>
+    </div>
+    <div id="plot"></div>
+
+    <script>
+        // Time vector
+        const t = Array.from({ length: 1000 }, (_, i) => i / 1000);
+
+        // Generate FM data
+        function generateFM(fc, fm, beta) {
+            const carrier = t.map(ti => Math.cos(2 * Math.PI * fc * ti));
+            const modulator = t.map(ti => Math.sin(2 * Math.PI * fm * ti));
+            const fmSignal = t.map((ti, idx) => Math.cos(2 * Math.PI * fc * ti + beta * modulator[idx]));
+            return { carrier, modulator, fmSignal };
+        }
+
+        // Plot FM
+        function plotFM(fc, fm, beta) {
+            const { carrier, modulator, fmSignal } = generateFM(fc, fm, beta);
+            const data = [
+                { x: t, y: modulator, type: 'scatter', mode: 'lines', name: 'Modulator', line: { color: 'blue' } },
+                { x: t, y: carrier, type: 'scatter', mode: 'lines', name: 'Carrier', line: { color: 'red' } },
+                { x: t, y: fmSignal, type: 'scatter', mode: 'lines', name: 'FM Signal', line: { color: 'green' } }
+            ];
+            const layout = {
+                title: 'Frequency Modulation',
+                xaxis: { title: 'Time (s)' },
+                yaxis: { title: 'Amplitude' },
+                margin: { t: 50, b: 50, l: 50, r: 50 }
+            };
+            Plotly.newPlot('plot', data, layout);
+        }
+
+        // Slider definitions
+        const sliders = [
+            { id: 'fc-slider', label: 'fc-value', min: 0, max: 8000, step: 100, initial: 1000 },
+            { id: 'fm-slider', label: 'fm-value', min: 0, max: 500, step: 10, initial: 100 },
+            { id: 'beta-slider', label: 'beta-value', min: 1, max: 10, step: 0.1, initial: 5 }
+        ];
+
+        const sliderValues = {};
+
+        // Initialize sliders
+        sliders.forEach(({ id, label, min, max, step, initial }) => {
+            const slider = document.getElementById(id);
+            noUiSlider.create(slider, {
+                start: initial,
+                range: { min, max },
+                step,
+                tooltips: true
+            });
+            sliderValues[label] = initial;
+            slider.noUiSlider.on('update', (values, handle) => {
+                sliderValues[label] = parseFloat(values[handle]);
+                document.getElementById(label).textContent = sliderValues[label];
+                plotFM(sliderValues['fc-value'], sliderValues['fm-value'], sliderValues['beta-value']);
+            });
+        });
+
+        // Initial plot
+        plotFM(1000, 100, 5);
+    </script>
+{% endblock %}

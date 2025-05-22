@@ -16,7 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from comunicacion.views import fm,mensaje, calcular,home,prueba,am,fsk,ask,decibeles,calcular1,lab
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='home'),
+    path('mensaje/',mensaje,name='mensaje'),
+    path('fm/', fm, name='fm'),
+    path('calculadora/', calcular, name='calculadora'),
+    path('calculadora/', calcular, name='calculadora'),
+    path('prueba/',prueba,name='prueba'),
+    path('am/',am,name='am'),
+    path('fsk/',fsk,name='fsk'),
+    path('ask/',ask,name='ask'),
+    path('decibeles/',decibeles,name='decibeles'),
+    path('radioenlace/', calcular1, name='radioenlace_calcular'),
+    path('labview/', lab, name='lab'),
 ]

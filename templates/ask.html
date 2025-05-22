@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}antenas{% endblock %}
+
+{% block content %}
+<script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css">
+<style>
+    .slider-container {
+        margin: 20px;
+    }
+    #sliders {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+    .slider {
+        width: 45%;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 700px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+    <h2 style="color: #2C3E50; text-align: center;">¿Qué es ASK (Amplitude Shift Keying)?</h2>
+    <p>
+      <strong>ASK</strong>, o Modulación por Desplazamiento de Amplitud, es una técnica de modulación digital donde la información binaria (bits 0 y 1) se transmite variando la amplitud de una señal portadora, mientras que la frecuencia y la fase permanecen constantes.
+    </p>
+    
+    <h3 style="color: #2C3E50;">¿Cómo funciona?</h3>
+    <p>
+      En ASK, la amplitud de la señal cambia según los datos que se desean transmitir:
+    </p>
+    <ul>
+      <li><strong>Amplitud baja (A<sub>0</sub>):</strong> Representa el bit 0.</li>
+      <li><strong>Amplitud alta (A<sub>1</sub>):</strong> Representa el bit 1.</li>
+    </ul>
+    <p>
+      La señal modulada en ASK se puede expresar matemáticamente como:
+    </p>
+    <div style="background-color: #e8f4fc; padding: 10px; border-radius: 5px; font-family: 'Courier New', monospace;">
+      s(t) = 
+      <span style="color: #2C3E50;">A<sub>1</sub> sin(2πf<sub>c</sub>t)</span> cuando el bit es 1, <br>
+      s(t) = 
+      <span style="color: #2C3E50;">A<sub>0</sub> sin(2πf<sub>c</sub>t)</span> cuando el bit es 0.
+    </div>
+    <p>
+      Donde:
+      <ul>
+        <li><strong>A<sub>1</sub> y A<sub>0</sub>:</strong> Amplitudes de la señal para bits 1 y 0, respectivamente.</li>
+        <li><strong>f<sub>c</sub>:</strong> Frecuencia de la señal portadora (constante).</li>
+        <li><strong>t:</strong> Tiempo.</li>
+      </ul>
+    </p>
+    
+    <h3 style="color: #2C3E50;">Ventajas de ASK</h3>
+    <p>
+      - Fácil de implementar.<br>
+      - Utilizado en aplicaciones donde la simplicidad es clave, como transmisiones ópticas (por ejemplo, en láseres y LEDs).
+    </p>
+    
+    <h3 style="color: #2C3E50;">Limitaciones</h3>
+    <p>
+      - Es más sensible al ruido, ya que cualquier alteración en la amplitud afecta la transmisión de datos.<br>
+      - Menos eficiente en términos de ancho de banda comparado con otras técnicas de modulación digital.
+    </p>
+    
+    <h3 style="color: #2C3E50;">Ejemplo gráfico</h3>
+    <p>
+      Imagina que queremos transmitir la secuencia <strong>1010</strong>. En ASK, esto se representa como una señal con amplitud alternante entre alta y baja, dependiendo del bit transmitido.
+    </p>
+    <p style="text-align: center;">
+      <img src="{%static 'img/ask.jpg'%}" alt="Ejemplo de ASK" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 5px;">
+    </p>
+    
+    <p style="text-align: center; font-style: italic;">
+      ¡ASK es una forma sencilla de transmitir datos digitales mediante variaciones en la amplitud de la señal!
+    </p>
+  </div>
+  
+
+
+
+
+<h1>Amplitude-Shift Keying (ASK) ejemplo imteractivo</h1>
+    <div id="sliders">
+        <div class="slider-container">
+            <label for="m-slider">Modulation Index (m)</label>
+            <div id="m-slider" class="slider"></div>
+            <span id="m-value">0.5</span>
+        </div>
+    </div>
+    <div id="plot"></div>
+
+    <script>
+        // Parameters
+        const bitstream = [1, 0, 1, 1, 0];
+        const bitRate = 1;             // bits per second
+        const fs = 1000;               // sampling frequency
+        const fCarrier = 10;           // carrier frequency
+        const amplitude = 1;           // carrier amplitude
+        const Tbit = 1 / bitRate;      // duration of one bit
+        const N = bitstream.length * fs;
+
+        // Time axis
+        const t = Array.from({ length: N }, (_, i) => i / fs);
+        // Expanded digital signal
+        const digitalSignal = [].concat(...bitstream.map(bit => Array(fs).fill(bit)));
+        // Base carrier
+        const carrier = t.map(ti => amplitude * Math.sin(2 * Math.PI * fCarrier * ti));
+
+        // Generate ASK
+        function generateASK(m) {
+            return t.map((_, i) => digitalSignal[i] === 1
+                ? carrier[i]
+                : (1 - m) * carrier[i]
+            );
+        }
+
+        // Plot ASK
+        function plotASK(m) {
+            const askSignal = generateASK(m);
+            const data = [
+                { x: t, y: digitalSignal, type: 'scatter', mode: 'lines', name: 'Digital Signal', line: { color: 'blue' } },
+                { x: t, y: carrier,       type: 'scatter', mode: 'lines', name: 'Carrier',        line: { color: 'red' } },
+                { x: t, y: askSignal,     type: 'scatter', mode: 'lines', name: 'ASK Signal',     line: { color: 'green' } }
+            ];
+            const layout = {
+                title: 'Amplitude-Shift Keying (ASK)',
+                xaxis: { title: 'Time (s)' },
+                yaxis: { title: 'Amplitude' },
+                margin: { t: 50, b: 50, l: 50, r: 50 }
+            };
+            Plotly.newPlot('plot', data, layout);
+        }
+
+        // Slider setup
+        const sliderConfig = [{ id: 'm-slider', label: 'm-value', min: 0, max: 1, step: 0.01, initial: 0.5 }];
+        const sliderValues = {};
+        sliderConfig.forEach(({ id, label, min, max, step, initial }) => {
+            const slider = document.getElementById(id);
+            noUiSlider.create(slider, {
+                start: initial,
+                range: { min, max },
+                step,
+                tooltips: true
+            });
+            sliderValues[label] = initial;
+            slider.noUiSlider.on('update', (values, handle) => {
+                sliderValues[label] = parseFloat(values[handle]);
+                document.getElementById(label).textContent = sliderValues[label];
+                plotASK(sliderValues['m-value']);
+            });
+        });
+
+        // Initial plot
+        plotASK(0.5);
+    </script>
+
+{%endblock%}

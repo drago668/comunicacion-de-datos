@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}antenas{% endblock %}
+
+{% block content %}
+
+<script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css">
+    <style>
+        .slider-container {
+            margin: 20px;
+        }
+        #sliders {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .slider {
+            width: 45%;
+            margin-bottom: 20px;
+        }
+    </style>
+    <h1>Frequency-Shift Keying (FSK) </h1>
+
+
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 700px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+        <h2 style="color: #2C3E50; text-align: center;">¿Qué es FSK (Frequency Shift Keying)?</h2>
+        <p>
+          <strong>FSK</strong>, o Modulación por Desplazamiento de Frecuencia, es una técnica de modulación digital utilizada para transmitir datos. En esta técnica, la información digital (bits 0 y 1) se representa mediante cambios en la frecuencia de una señal portadora.
+        </p>
+        
+        <h3 style="color: #2C3E50;">¿Cómo funciona?</h3>
+        <p>
+          En FSK, se utilizan dos frecuencias diferentes para representar los bits:
+        </p>
+        <ul>
+          <li><strong>Frecuencia baja (f<sub>0</sub>):</strong> Representa el bit 0.</li>
+          <li><strong>Frecuencia alta (f<sub>1</sub>):</strong> Representa el bit 1.</li>
+        </ul>
+        <p>
+          La señal modulada en FSK puede expresarse matemáticamente como:
+        </p>
+        <div style="background-color: #e8f4fc; padding: 10px; border-radius: 5px; font-family: 'Courier New', monospace;">
+          s(t) = 
+          <span style="color: #2C3E50;">A sin(2πf<sub>1</sub>t)</span> cuando el bit es 1, <br>
+          s(t) = 
+          <span style="color: #2C3E50;">A sin(2πf<sub>0</sub>t)</span> cuando el bit es 0.
+        </div>
+        <p>
+          Donde:
+          <ul>
+            <li><strong>A:</strong> Amplitud de la señal.</li>
+            <li><strong>f<sub>1</sub> y f<sub>0</sub>:</strong> Frecuencias asignadas a los bits 1 y 0, respectivamente.</li>
+            <li><strong>t:</strong> Tiempo.</li>
+          </ul>
+        </p>
+        
+        <h3 style="color: #2C3E50;">Ventajas de FSK</h3>
+        <p>
+          - Es menos susceptible al ruido en comparación con otras técnicas de modulación digital.<br>
+          - Se utiliza ampliamente en sistemas de comunicación como módems, walkie-talkies y RFID.
+        </p>
+        
+        <h3 style="color: #2C3E50;">Ejemplo gráfico</h3>
+        <p>
+          Imagina que queremos transmitir la secuencia <strong>1010</strong>. En FSK, esto se representará como una señal que alterna entre las frecuencias <strong>f<sub>1</sub></strong> y <strong>f<sub>0</sub></strong>, dependiendo del bit transmitido.
+        </p>
+        <p style="text-align: center;">
+          <img src="{% static 'img/OIP.jpg'%}" alt="Ejemplo de FSK" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 5px;">
+        </p>
+        
+        
+        <p style="text-align: center; font-style: italic;">
+          ¡Así es como FSK permite transmitir datos digitales de manera eficiente mediante variaciones en la frecuencia!
+        </p>
+      </div>
+      
+      <h1>Frecuency-Shift Keying (FSK) ejemplo imteractivo</h1>
+    <div id="sliders">
+        <div class="slider-container">
+            <label for="h-slider"> Indice de modulacion (h)</label>
+            <div id="h-slider" class="slider"></div>
+            <span id="h-value">2</span>
+        </div>
+    </div>
+    <div id="plot"></div>
+
+    <script>
+        // Parameters
+        const bitstream = [1, 0, 1, 1, 0];
+        const bitRate = 1;           // bits per second
+        const fs = 1000;             // sampling frequency
+        const amplitude = 1;
+        const Tbit = 1 / bitRate;
+        const fCarrier = 10;
+
+        // Time vectors
+        const tTotal = Array.from({ length: bitstream.length * fs }, (_, i) => i / fs);
+        const tBit = Array.from({ length: fs }, (_, i) => i / fs);
+        // Digital signal
+        const digitalSignal = [].concat(...bitstream.map(bit => Array(fs).fill(bit * amplitude)));
+
+        function generateFSK(h) {
+            // Frequencies for bits
+            const f1 = fCarrier + h;
+            const f2 = fCarrier - h;
+            // FSK signal
+            const fsk = [];
+            for (let i = 0; i < bitstream.length; i++) {
+                const bit = bitstream[i];
+                const tSeg = tBit;
+                const wave = tSeg.map(t => amplitude * Math.sin(2 * Math.PI * (bit ? f1 : f2) * t));
+                fsk.push(...wave);
+            }
+            // Single-bit carriers
+            const onda1 = tBit.map(t => amplitude * Math.sin(2 * Math.PI * f1 * t));
+            const onda2 = tBit.map(t => amplitude * Math.sin(2 * Math.PI * f2 * t));
+            return { fsk, onda1, onda2 };
+        }
+
+        function plotFSK(h) {
+            const { fsk, onda1, onda2 } = generateFSK(h);
+            const data = [
+                { x: tTotal, y: digitalSignal, xaxis: 'x1', yaxis: 'y1', name: 'Digital Signal', mode: 'lines', line: { color: 'blue' } },
+                { x: tTotal, y: fsk,       xaxis: 'x2', yaxis: 'y2', name: 'FSK Signal',     mode: 'lines', line: { color: 'green' } },
+                { x: tBit,   y: onda1,     xaxis: 'x3', yaxis: 'y3', name: 'Carrier f1',     mode: 'lines', line: { dash: 'dash', color: 'red' } },
+                { x: tBit,   y: onda2,     xaxis: 'x3', yaxis: 'y3', name: 'Carrier f2',     mode: 'lines', line: { dash: 'dash', color: 'purple' } }
+            ];
+            const layout = {
+                title: 'FSK Modulation',
+                grid: { rows: 3, columns: 1, pattern: 'independent' },
+                xaxis1: { title: 'Time (s)' }, yaxis1: { title: 'Amplitude' },
+                xaxis2: { title: 'Time (s)' }, yaxis2: { title: 'Amplitude' },
+                xaxis3: { title: 'Time (s)' }, yaxis3: { title: 'Amplitude' },
+                margin: { t: 50, b: 50, l: 50, r: 50 }
+            };
+            Plotly.newPlot('plot', data, layout, { displayModeBar: false });
+        }
+
+        // Slider setup
+        const sliderConfig = [{ id: 'h-slider', label: 'h-value', min: 0, max: 100, step: 0.1, initial: 2 }];
+        const sliderValues = {};
+        sliderConfig.forEach(({ id, label, min, max, step, initial }) => {
+            const slider = document.getElementById(id);
+            noUiSlider.create(slider, { start: initial, range: { min, max }, step, tooltips: true });
+            sliderValues[label] = initial;
+            slider.noUiSlider.on('update', (values, handle) => {
+                sliderValues[label] = parseFloat(values[handle]);
+                document.getElementById(label).textContent = sliderValues[label];
+                plotFSK(sliderValues['h-value']);
+            });
+        });
+
+        // Initial plot
+        plotFSK(2);
+    </script>
+
+
+{%endblock%}

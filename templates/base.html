@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+  <link rel="stylesheet" href="{% static 'css/graficas.css'%}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -19,24 +20,54 @@
     crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.4/dist/js/bootstrap.bundle.min.js"></script>
   <title>{% block title %}Mi Sitio{% endblock %}</title>
-
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 200vh; /* para forzar scroll */
+    }
+    main {
+      flex: 1;
+      padding: 2em;
+    }
+    /* Footer oculto por defecto */
+    footer {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+      background: #333;
+      color: #fff;
+      text-align: center;
+      padding: 1em;
+    }
+    footer.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    /* Sentinel ocupa 1px al final del contenido */
+    #sentinel {
+      height: 1px;
+    }
+  </style>
 
 </head>
 
 <body>
+  <main>
   <header>
 
 
 
-    <h1>Software de Gestión para Freelancers</h1>
+    
     <script src="{%static 'js/fn.js' %}"></script>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-transparent" style="background-color: #e3f2fd;">
+    <nav class="navbar navbar-expand-lg navbar-dark  fixed-top" style="background-color: #e3f2fd; color: #091d32;">
       <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'perfil'%}">
-          <img class="logo horizontal-logo" style="display: inline;" src="{% static 'img/usuario.png' %}" alt=" logo">
-          {% if request.user.is_authenticated %}
-          <h6 style="text-align: left; display: inline;">Bienvenido, {{ request.user.username }}!</h6>
-          {% endif %}
+        
+        <br>
+        <a class="navbar-brand" href="#">
+          <!--<img class="logo horizontal-logo" style="display: inline;" src="{% static 'img/usuario.png' %}" alt=" logo">
+        -->
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,22 +76,25 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="#">link</a>
+              <a class="nav-link" href="{% url 'home'%}">home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">link</a>
+              <a class="nav-link" href="{% url 'decibeles' %}">calculadora dbs</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">link</a>
+              <a class="nav-link" href="{%url 'calculadora' %}">Calculadora mensaje</a>
+            </li>
+              <li class="nav-item">
+              <a class="nav-link" href="{%url 'lab' %}">LabView</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                Contrato
+                frecuencias
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
-                <a class="dropdown-item" href="#">link</a>
-                <a class="dropdown-item" href="#">link</a>
+                <a class="dropdown-item" href="{% url 'fm'%}">fm</a>
+                <a class="dropdown-item" href="{%url 'am'%}">am</a>
                 <!--<div class="dropdown-divider"></div>
                       <a class="dropdown-item" href="#">Something else here</a>-->
               </div>
@@ -68,35 +102,52 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                Proyectos
+                Comunicacion digital
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown2">
-                <a class="dropdown-item" href="#">link</a>
-                <a class="dropdown-item" href="#">link</a>
+                <a class="dropdown-item" href="{%url 'fsk'%}">fsk</a>
+                <a class="dropdown-item" href="{%url 'ask'%}">ask</a>
                 <!--<div class="dropdown-divider"></div>
                       <a class="dropdown-item" href="#">Something else here</a>-->
               </div>
             </li>
-            <li class="mt-2">{% if request.user.is_authenticated %}
-              <form action="{% url 'logout' %}" method="post" style="display: inline;" class="cerrar_sesion">
-                {% csrf_token %}
-                <button type="submit"
-                  style="display: inline; all: unset; cursor: pointer; text-decoration: underline;">Cerrar
-                  sesión</button>
-              </form>
-              {%endif%}
+            
             </li>
           </ul>
         </div>
       </div>
     </nav>
   </header>
-  <div class="container mt-4">
+  <div class="container mt-5">
     {% block content %}{% endblock %}
   </div>
-  <footer>
-    <p>&copy; 2025 Software de Gestión para Freelancers. Todos los derechos reservados.</p>
+  <div id="sentinel"></div>
+  </main>
+  <footer  id="site-footer">
+    <p>&copy; 2025 proyecto Comunicacion de datos. Todos los derechos reservados.</p>
   </footer>
+  <script>
+    const footer = document.getElementById('site-footer');
+    const sentinel = document.getElementById('sentinel');
+
+    // Configuramos el observer
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Aparece el footer
+          footer.classList.add('visible');
+          // Ya no nos interesa volver a ocultarlo
+          obs.unobserve(entry.target);
+        }
+      });
+    }, {
+      root: null,           // viewport
+      threshold: 1.0        // al 100% de visibilidad del sentinel
+    });
+
+    observer.observe(sentinel);
+  </script>
+ 
 </body>
 
 </html>

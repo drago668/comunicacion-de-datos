@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}antenas{% endblock %}
+
+{% block content %}
+
+<style>
+    .image-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .image-container img {
+        width: 80%;
+    }
+</style>
+<div class="image-container">
+    <img src="{% static 'img/red.png'%}" alt="" >
+</div>
+<br><br>
+<div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <div class="card mx-auto" style="width: 15rem;">
+                    <div class="card-body">
+                        <div class="feature">
+                            <h3>Calculadora de mensajes</h3>
+                            <p>En este módulo, calculamos la relación entre el tamaño de un mensaje, la velocidad de transmisión y el tiempo que tarda en transmitirse.</p>
+                            <a href="{% url 'calculadora' %}" class="button">mensaje</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="card mx-auto" style="width: 15rem;">
+                    <div class="card-body">
+                        <div class="feature">
+                            <h3>Perturbacion en transmision de señales</h3>
+                            <p>se pueden presentar diversos fenómenos que afectan la calidad de la señal, conocidas como perturbaciones.</p>
+                            <a href="{% url 'decibeles' %}" class="button">Decibeles</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="card mx-auto" style="width: 15rem;">
+                    <div class="card-body">
+                        <div class="feature">
+                            <h3>Modulo Lab view</h3>
+                            <p>Sistema de Control de Tanques en LabVIEW: n una granja automatizada, es necesario gestionar de forma eficiente el uso del agua recolectada en dos tanques de almacenamiento.</p>
+                            <a href="{% url 'lab'%}" class="button">Ir a Labview</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="card mx-auto" style="width: 15rem;">
+                    <div class="card-body">
+                        <div class="feature">
+                            <h3>Exámenes</h3>
+                            <p>En el presente aplicativo web ppuedes adentrarte en el muno de las comunicaciones, y entender de forma sencilla como funiona las modulaciones de señales</p>
+                            <ul>
+                                <li>Am</li>
+                                <li>fm</li>
+                                <li>ask</li>
+                                <li>fsk</li>
+                            </ul>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

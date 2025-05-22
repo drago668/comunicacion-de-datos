@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}prueba{% endblock %}
+
+{% block content %}
+	<!-- Load plotly.js into the DOM -->
+	<script src='https://cdn.plot.ly/plotly-3.0.1.min.js'></script>
+
+	<div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+{%endblock%}

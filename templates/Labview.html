@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}LabView{% endblock %}
+{% load static%}
+{% block content %}
+<h1>Sistema de Control de Tanques en LabVIEW</h1>
+
+<p>
+En una granja automatizada, es necesario gestionar de forma eficiente el uso del agua 
+recolectada en dos tanques de almacenamiento. Estos tanques deben adaptarse a los 
+cambios del entorno, incluyendo la variación en la iluminación natural, que afecta la visibilidad 
+y operación.
+</p>
+
+<h2>Requerimientos del Sistema</h2>
+<ul>
+    <li>Monitoree la intensidad de luz real mediante una LDR conectada a un Arduino.</li>
+    <li>Permita al operario controlar manualmente el nivel de los tanques o dejarlo en un modo automático.</li>
+    <li>Use LEDs reales conectados al Arduino para indicar los niveles de luz.</li>
+</ul>
+
+<h2>Diseño del Sistema</h2>
+<p>
+El sistema de control se desarrollará en LabVIEW con LINX y Arduino. El nivel de los tanques será controlado y reaccionará a la luz ambiente medida por un sensor LDR. Tres LEDs (reales y virtuales) indicarán los niveles de luz según los siguientes rangos:
+</p>
+
+<h3>Modo de Operación</h3>
+<ul>
+    <li><strong>Manual:</strong> El usuario ajusta el nivel deseado con un Slide.</li>
+    <li><strong>Automático:</strong> El sistema ajusta el nivel en función del valor de luz.</li>
+</ul>
+
+<h3>Comportamiento del Tanque (en Automático)</h3>
+<ul>
+    <li><strong>Luz baja:</strong> El nivel del tanque se vacía lentamente hasta llegar a &lt;33%.</li>
+    <li><strong>Luz media:</strong> El nivel del tanque se ajusta a ~50%.</li>
+    <li><strong>Luz alta:</strong> El nivel del tanque se llena lentamente hasta llegar a &gt;66%.</li>
+</ul>
+
+<h2>Visualización en LabVIEW</h2>
+<ul>
+    <li>Slide que muestra el nivel actual del tanque.</li>
+    <li>Gráfico tipo termómetro o barra para el nivel.</li>
+    <li>Lectura continua del valor de la LDR.</li>
+    <li>Tres LEDs virtuales sincronizados con los LEDs físicos (Verde, Amarillo, Rojo).</li>
+    <li>Selector de modo: Manual / Automático.</li>
+</ul>
+<h2>Solucion</h2>
+<p>Para gestionar de forma eficiente el uso del agua recolectada en los dos dos 
+tanques de almacenamiento se presenta un sistema el cual reaccione a la luz 
+ambiente medida por un sensor LDR, para esto se presenta la simulación del 
+sistema de control en LABVIEW y a su vez se hace la implementación con un 
+Arduino UNO para su correcta visualización:</p>
+<h4>Codigo Manual</h4>
+<p> Aqui es donde el usuario ajusta el nivel deseado con un Slide.</p>
+<img src="{% static 'img/codigo.png'%}" alt="codigo manual">
+<br>
+<h4>Codigo Automatico</h4>
+<p>Aqui es donde se configura que el sistema ajuste el nivel en función del valor de luz proporcionado por la fotoresistencia.</p>
+<img src="{%static 'img/Automatico.png'%}" alt="codigo automatico">
+<br><br>
+<h4>Vista del codigo</h4>
+<img src="{% static 'img/vista.png'%}" alt="vista del codigo">
+<br><br>
+<h4>Circuito  fisico con el arduino</h4>
+<img src="{% static 'img/fisico.png'%}" alt="">
+<br><br><br>
+
+{%endblock%}

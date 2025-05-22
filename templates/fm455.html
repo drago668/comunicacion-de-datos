@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Modulación FM{% endblock %}
+
+{% block content %}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <h2>Modulación FM</h2>
+    <div>
+        <label for="slider_fc">Frecuencia de la portadora (fc): </label>
+        <input id="slider_fc" type="range" min="500" max="2000" step="100" value="1000">
+        <span id="value_fc">1000</span> Hz
+    </div>
+    <div>
+        <label for="slider_fm">Frecuencia de la moduladora (fm): </label>
+        <input id="slider_fm" type="range" min="50" max="500" step="10" value="100">
+        <span id="value_fm">100</span> Hz
+    </div>
+    <div>
+        <label for="slider_beta">Índice de modulación (β): </label>
+        <input id="slider_beta" type="range" min="1" max="10" step="0.1" value="5">
+        <span id="value_beta">5</span>
+    </div>
+    <div class="container_fm">
+        <div id="mensaje"></div>
+        <div id="portadora"></div>
+        <div id="modulada"></div>
+        <div id="combinada"></div>
+    </div>
+    <script>
+        function modulacionFM(fc, fm, beta, duracion, fs) {
+            let t = [];
+            let mensaje = [];
+            let portadora = [];
+            let moduladora = [];
+            let fm_senal = [];
+
+            let n = fs * duracion;
+            for (let i = 0; i < n; i++) {
+                let tiempo = i / fs;
+                t.push(tiempo);
+                let msg = Math.sin(2 * Math.PI * fm * tiempo);
+                let port = Math.cos(2 * Math.PI * fc * tiempo + beta * msg);
+                let mod = Math.cos(2 * Math.PI * fc * tiempo);
+                mensaje.push(msg);
+                portadora.push(port);
+                moduladora.push(mod);
+                fm_senal.push(1 + msg * port);
+            }
+            return { t, mensaje, portadora, moduladora, fm_senal };
+        }
+
+        function plotSignal(divId, x, y, title, color) {
+            let trace = {
+                x: x,
+                y: y,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: color }
+            };
+            let layout = { title: title, xaxis: { title: 'Tiempo (s)' }, yaxis: { title: 'Amplitud' } };
+            Plotly.newPlot(divId, [trace], layout, { displayModeBar: false });
+        }
+
+        let fc = 1000;
+        let fm = 100;
+        let beta = 5;
+        let duracion = 0.02;
+        let fs = 100000;
+
+        function updatePlots() {
+            let { t, mensaje, portadora, moduladora, fm_senal } = modulacionFM(fc, fm, beta, duracion, fs);
+            plotSignal("mensaje", t, mensaje, "Señal moduladora (Mensaje)", "red");
+            plotSignal("portadora", t, portadora, "Señal portadora", "blue");
+            plotSignal("modulada", t, fm_senal, "Señal modulada FM", "cyan");
+            plotSignal("combinada", t, mensaje, "Señal moduladora y portadora", "purple");
+        }
+
+        // Inicializar gráficos
+        updatePlots();
+
+        // Escuchar cambios en los sliders
+        document.getElementById("slider_fc").addEventListener("input", function (e) {
+            fc = parseInt(e.target.value);
+            document.getElementById("value_fc").innerText = fc;
+            updatePlots();
+        });
+
+        document.getElementById("slider_fm").addEventListener("input", function (e) {
+            fm = parseInt(e.target.value);
+            document.getElementById("value_fm").innerText = fm;
+            updatePlots();
+        });
+
+        document.getElementById("slider_beta").addEventListener("input", function (e) {
+            beta = parseFloat(e.target.value);
+            document.getElementById("value_beta").innerText = beta;
+            updatePlots();
+        });
+    </script>
+{%endblock%}

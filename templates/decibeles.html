@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% block title %}Conversión dB ↔ Watts{% endblock %}
+
+{% block content %}
+<style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    label { display: block; margin: 1em 0 0.5em; }
+    input, button { padding: 0.5em; font-size: 1em; margin-bottom: 1em; }
+    button { cursor: pointer; }
+    #results { margin-top: 1.5em; padding: 1em; border: 1px solid #ddd; background: #f9f9f9; }
+    #logic { margin-top: 2em; padding: 1em; background: #eef; border: 1px solid #ccc; }
+    h1 { color: #4CAF50; }
+    #gains-list { margin-top: 1em; }
+    .gain-item { margin-bottom: 0.5em; }
+</style>
+
+<h1>Conversión Potencia: dB ↔ Watts</h1>
+<div id="theory">
+    <h2>Perturbaciones en la Transmisión de Señales</h2>
+    <p>Durante la transmisión de señales en sistemas de comunicación, se pueden presentar diversos fenómenos que afectan la calidad de la señal. A continuación, se describen los principales:</p>
+    <h3>Atenuación</h3>
+    <p>La atenuación se refiere a la pérdida de potencia de la señal a medida que esta se propaga por el medio de transmisión. Esto ocurre debido a:</p>
+    <ul>
+        <li>Dispersión en el medio.</li>
+        <li>Pérdidas resistivas en conductores.</li>
+        <li>Absorción por materiales del entorno.</li>
+    </ul>
+    <p>La relación de atenuación en dB está dada por:</p>
+    <p>\[
+    \text{Atenuación (dB)} = 10 \cdot \log_{10}\left(\frac{P_{\text{entrada}}}{P_{\text{salida}}}\right)
+    \]</p>
+
+    <h3>Distorsión</h3>
+    <p>La distorsión ocurre cuando las diferentes frecuencias de la señal no se transmiten de manera uniforme. Esto resulta en la alteración de la forma de la señal original. Algunas causas comunes son:</p>
+    <ul>
+        <li>Filtros en el medio de transmisión.</li>
+        <li>Diferentes retardos de propagación para cada frecuencia.</li>
+    </ul>
+
+    <h3>Ruido</h3>
+    <p>El ruido es cualquier señal no deseada que se mezcla con la señal transmitida. Puede ser causado por:</p>
+    <ul>
+        <li>Interferencias electromagnéticas.</li>
+        <li>Generación de ruido térmico en los componentes electrónicos.</li>
+        <li>Fenómenos externos como rayos o fuentes industriales.</li>
+    </ul>
+    <p>El nivel de ruido afecta la relación señal-ruido (\(SNR\)) y se calcula como:</p>
+    <p>\[
+    SNR (\text{dB}) = 10 \cdot \log_{10}\left(\frac{P_{\text{señal}}}{P_{\text{ruido}}}\right)
+    \]</p>
+</div>
+
+<div id="logic">
+    <h2>Explicación Matemática</h2>
+    <p>La conversión entre dB y Watts sigue las siguientes fórmulas:</p>
+    <ul>
+        <li><strong>Conversión de Watts a dB:</strong></li>
+        <p>\[
+        P_{\text{dB}} = 10 \cdot \log_{10}(P_{\text{W}})
+        \]</p>
+        <li><strong>Conversión de dB a Watts:</strong></li>
+        <p>\[
+        P_{\text{W}} = 10^{\frac{P_{\text{dB}}}{10}}
+        \]</p>
+        <li><strong>Cálculo acumulativo:</strong></li>
+        <p>\[
+        P_{\text{dB, final}} = P_{\text{dB, inicial}} + \sum G_i
+        \]</p>
+        <p>\[
+        P_{\text{W, final}} = 10^{\frac{P_{\text{dB, final}}}{10}}
+        \]</p>
+    </ul>
+    <p>Dónde:
+        <ul>
+            <li>\(P_{\text{W}}\): Potencia en Watts</li>
+            <li>\(P_{\text{dB}}\): Potencia en dB</li>
+            <li>\(G_i\): Ganancia o pérdida en dB</li>
+        </ul>
+    </p>
+</div>
+
+<!-- Formulario para ingresar valores -->
+    <h1>Ejemplo practico</h1>
+<label for="input-watts">Potencia inicial en Watts:</label>
+<input id="input-watts" type="number" step="any" placeholder="Ej: 0.01">
+
+<label for="input-db">Potencia inicial en dB:</label>
+<input id="input-db" type="number" step="any" placeholder="Ej: -30">
+
+<label for="gain">Agregar ganancia o pérdida (dB):</label>
+<input id="gain" type="number" step="any" placeholder="Ej: 3">
+<button id="add-gain">Agregar</button>
+
+<div id="gains-list">
+    <h3>Ganancias/Atenuaciones acumuladas:</h3>
+    <ul id="gains"></ul>
+</div>
+
+<button id="calculate">Calcular salida</button>
+
+<!-- Resultados -->
+<div id="results">
+ 
+    <p>Potencia inicial en dB: <strong><span id="initial-db">-</span> dB</strong></p>
+    <p>Potencia de salida acumulada en dB: <strong><span id="final-db">-</span> dB</strong></p>
+    <p>Potencia de salida acumulada en Watts: <strong><span id="final-watts">-</span> W</strong></p>
+</div>
+
+
+
+<script>
+    function wattsToDb(w) {
+        return 10 * Math.log10(w);
+    }
+    function dbToWatts(db) {
+        return Math.pow(10, db / 10);
+    }
+
+    let gains = [];
+
+    document.getElementById('add-gain').addEventListener('click', () => {
+        const gainInput = parseFloat(document.getElementById('gain').value);
+        if (isNaN(gainInput)) {
+            alert('Ingresa un valor de ganancia o pérdida en dB válido.');
+            return;
+        }
+        gains.push(gainInput);
+        const gainsList = document.getElementById('gains');
+        const listItem = document.createElement('li');
+        listItem.textContent = `${gainInput} dB`;
+        listItem.className = "gain-item";
+        gainsList.appendChild(listItem);
+        document.getElementById('gain').value = '';
+    });
+
+    document.getElementById('calculate').addEventListener('click', () => {
+        const wattsInput = parseFloat(document.getElementById('input-watts').value.trim());
+        const dbInput = parseFloat(document.getElementById('input-db').value.trim());
+
+        let initialDb = null;
+        if (!isNaN(wattsInput) && wattsInput > 0) {
+            initialDb = wattsToDb(wattsInput);
+        } else if (!isNaN(dbInput)) {
+            initialDb = dbInput;
+        } else {
+            alert('Ingresa un valor inicial válido en Watts o dB.');
+            return;
+        }
+
+        const totalDb = initialDb + gains.reduce((sum, g) => sum + g, 0);
+        const finalWatts = dbToWatts(totalDb);
+
+        document.getElementById('initial-db').textContent = initialDb.toFixed(2);
+        document.getElementById('final-db').textContent = totalDb.toFixed(2);
+        document.getElementById('final-watts').textContent = finalWatts.toFixed(6);
+    });
+</script>
+
+<!-- MathJax -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js">
+</script>
+
+{% endblock %}

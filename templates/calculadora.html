@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Calculadora{% endblock %}
+
+{% block content %}
+ <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<h1 style="text-align: center;">Bienvenido al modulo de calculadora de mensajes</h1>
+ <div class="container">
+        <h1>Cómo funcionan los cálculos de transmisión</h1>
+
+        <h2>Conceptos básicos</h2>
+        <p>En este módulo, calculamos la relación entre el tamaño de un mensaje, la velocidad de transmisión y el tiempo que tarda en transmitirse. Estas relaciones están determinadas por las fórmulas:</p>
+
+        <div class="formula">
+            <strong>Tiempo de transmisión:</strong> \( T = \frac{S}{V} \) <br>
+            <strong>Tamaño del mensaje:</strong> \( S = T \cdot V \) <br>
+            <strong>Velocidad de transmisión:</strong> \( V = \frac{S}{T} \)
+        </div>
+
+        <h2>Explicación</h2>
+        <p>
+            - <strong>Tamaño del mensaje:</strong> Representa la cantidad total de datos que se desean transmitir (en bits o bytes).
+        </p>
+        <p>
+            - <strong>Velocidad de transmisión:</strong> Es la tasa a la que se envían datos, generalmente medida en bits por segundo (bps).
+        </p>
+        <p>
+            - <strong>Tiempo de transmisión:</strong> Indica cuánto tiempo se tarda en enviar el mensaje completo, dependiendo de su tamaño y la velocidad de transmisión.
+        </p>
+
+        <h2>Ejemplo teórico</h2>
+        <p>Supongamos que tenemos un mensaje de \( S = 1000 \, \text{bytes} \) y una velocidad de transmisión de \( V = 500 \, \text{bytes/segundo} \):</p>
+        <div class="formula">
+            <strong>Tiempo de transmisión:</strong> \( T = \frac{1000}{500} = 2 \, \text{segundos} \)
+        </div>
+
+        <h2>Interacción</h2>
+        <p>En una implementación interactiva, puedes introducir valores para el tamaño del mensaje y la velocidad de transmisión, y el programa calculará el tiempo automáticamente (o cualquier otra variable que falte).</p>
+    </div>
+
+<br><br>
+{% if  resultado_no_cero %}
+<label for="resultado"> Resultado</label>
+<input type="text" name="resultado" value="{{resultado}}">
+{%else%}
+
+{%endif%}
+<div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+            Tiempo de transmision
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse " data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+            <form action="{% url 'calculadora' %}" method="post">
+                {% csrf_token %}
+                <label for="tamano">Tamaño de mensaje</label>
+                <input type="number" name="tamano" id="">
+                <label for="velocidad">Velocidad de transmision:</label>
+                <input type="number" name="velocidad" id="">
+                <input type="hidden" name="tiempo" value="1">
+                <input type="hidden" name="seleccion" value="1">
+                <button type="submit">Enviar</button>
+            </form>
+          
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+           Tamaño de mensaje
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+            <form action="{% url 'calculadora' %}" method="post">
+                {% csrf_token %}
+                <label for="tiempo">tiempo de transmision</label>
+                <input type="number" name="tiempo" id="">
+                <label for="velocidad">Velocidad de transmision:</label>
+                <input type="number" name="velocidad" id="">
+                <input type="hidden" name="tiempo" value="1">
+                <input type="hidden" name="seleccion" value="2">
+                <button type="submit">Enviar</button>
+            </form>  
+             </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Velocidad de transmision
+        </button>
+      </h2>
+      <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+
+            <form action="{% url 'calculadora' %}" method="post">
+                {% csrf_token %}
+                <label for="tiempo">tiempo de trasnmisio</label>
+                <input type="number" name="tiempo" id="">
+                <label for="tamano">Tamaño de mensaje:</label>
+                <input type="number" name="tamano" id="">
+                <input type="hidden" name="velocidad" value="1">
+                <input type="hidden" name="seleccion" value="3">
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

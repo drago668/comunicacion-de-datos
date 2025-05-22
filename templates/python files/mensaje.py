@@ -1,0 +1,7 @@
+tamano_mensaje=0
+velocidad_transmision=0
+tiempo_mensaje=0
+
+tiempo_trasnmision=tamano_mensaje/velocidad_transmision
+tamano_mensaje=velocidad_transmision*tiempo_trasnmision
+velocidad_transmision=tamano_mensaje/tiempo_trasnmision  

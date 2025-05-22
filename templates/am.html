@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Modulación AM{% endblock %}
+
+{% block content %}
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css">
+    <style>
+         .slider-container {
+            margin: 20px;
+        }
+        #sliders {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .slider {
+            width: 45%;
+            margin-bottom: 20px;
+        }
+    </style>
+     <h1>Amplitude Modulation (AM) </h1>
+     <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 700px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+        <h2 style="color: #2C3E50; text-align: center;">¿Qué es la Modulación en Amplitud (AM)?</h2>
+        <p>
+          <strong>AM</strong>, o Modulación en Amplitud, es una técnica de modulación analógica en la que la amplitud de la señal portadora varía de acuerdo con la amplitud de la señal moduladora (o señal de entrada), mientras que la frecuencia de la portadora permanece constante.
+        </p>
+        <h3 style="color: #2C3E50;">¿Cómo funciona?</h3>
+        <p>
+          En AM, la amplitud de la señal portadora se modifica en función de la señal moduladora. La señal modulada en amplitud se puede expresar matemáticamente como:
+        </p>
+        <div style="background-color: #e8f4fc; padding: 10px; border-radius: 5px; font-family: 'Courier New', monospace;">
+          s(t) = [A<sub>c</sub> + m(t)] sin(2πf<sub>c</sub>t)
+        </div>
+        <p>
+          Donde:
+          <ul>
+            <li><strong>A<sub>c</sub>:</strong> Amplitud de la señal portadora.</li>
+            <li><strong>f<sub>c</sub>:</strong> Frecuencia de la portadora.</li>
+            <li><strong>m(t):</strong> Señal moduladora (la información que se desea transmitir).</li>
+          </ul>
+        </p>
+        <h3 style="color: #2C3E50;">Ventajas de AM</h3>
+        <p>
+          - Es sencilla de implementar y analizar.<br>
+          - Utilizada ampliamente en la radiodifusión de ondas de amplitud (radio AM).
+        </p>
+        <h3 style="color: #2C3E50;">Limitaciones</h3>
+        <p>
+          - Mayor susceptibilidad al ruido y las interferencias.<br>
+          - Baja eficiencia en el uso de la potencia, ya que gran parte de esta se concentra en la portadora.
+        </p>
+        <h3 style="color: #2C3E50;">Ejemplo gráfico</h3>
+        <p>
+          En AM, la amplitud de la onda portadora cambia según la amplitud de la señal moduladora. Si la señal moduladora es una onda senoidal, la envolvente de la onda modulada también será una senoidal.
+        </p>
+        <p style="text-align: center;">
+          <img src="{% static 'img/am.jpg' %}" alt="Ejemplo de AM" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 5px;">
+        </p>
+        <p style="text-align: center; font-style: italic;">
+          ¡AM es una técnica de modulación clásica utilizada en las primeras etapas de la comunicación inalámbrica!
+        </p>
+      </div>
+      <h1>Amplitude Modulation (AM) ejemplo interactivo </h1>
+     <br>
+     <br>
+     <div id="sliders">
+         <div class="slider-container">
+             <label for="fc-slider"> Frecuencia del Carrier (fc)</label>
+             <div id="fc-slider" class="slider"></div>
+             <span id="fc-value">50</span> Hz
+         </div>
+         <div class="slider-container">
+             <label for="fm-slider"> Frequencia Moduladora(fm)</label>
+             <div id="fm-slider" class="slider"></div>
+             <span id="fm-value">5</span> Hz
+         </div>
+         <div class="slider-container">
+             <label for="Ac-slider">Amplitud Carrier  (Ac)</label>
+             <div id="Ac-slider" class="slider"></div>
+             <span id="Ac-value">1</span>
+         </div>
+         <div class="slider-container">
+             <label for="Am-slider">Amplitud Moduladora (Am)</label>
+             <div id="Am-slider" class="slider"></div>
+             <span id="Am-value">0.5</span>
+         </div>
+     </div>
+     <div id="plot"></div>
+ 
+     <script>
+         const t = Array.from({ length: 1000 }, (_, i) => i / 1000);
+ 
+         function generateData(fc, fm, Ac, Am) {
+             const carrier = t.map(ti => Ac * Math.cos(2 * Math.PI * fc * ti));
+             const modulator = t.map(ti => Am * Math.cos(2 * Math.PI * fm * ti));
+             const modulated = t.map((ti, idx) => (1 + modulator[idx]) * carrier[idx]);
+             return { carrier, modulator, modulated };
+         }
+ 
+         function plotAM(fc, fm, Ac, Am) {
+             const { carrier, modulator, modulated } = generateData(fc, fm, Ac, Am);
+             const data = [
+                 { x: t, y: modulator, type: 'scatter', mode: 'lines', name: 'Moduladora', line: { color: 'blue' } },
+                 { x: t, y: carrier, type: 'scatter', mode: 'lines', name: 'Carrier', line: { color: 'red' } },
+                 { x: t, y: modulated, type: 'scatter', mode: 'lines', name: 'Señal Modulada', line: { color: 'green' } },
+             ];
+             const layout = {
+                 title: 'Amplitud Modulada',
+                 xaxis: { title: 'Tiempo (s)' },
+                 yaxis: { title: 'Amplitud' },
+                 margin: { t: 50, b: 50, l: 50, r: 50 }
+             };
+             Plotly.newPlot('plot', data, layout);
+         }
+ 
+         // Initialize sliders
+         const sliders = [
+             { id: 'fc-slider', label: 'fc-value', min: 1, max: 100, step: 1, initial: 50 },
+             { id: 'fm-slider', label: 'fm-value', min: 1, max: 20, step: 1, initial: 5 },
+             { id: 'Ac-slider', label: 'Ac-value', min: 0.1, max: 2, step: 0.1, initial: 1 },
+             { id: 'Am-slider', label: 'Am-value', min: 0.1, max: 1, step: 0.1, initial: 0.5 }
+         ];
+ 
+         const sliderValues = {};
+ 
+         sliders.forEach(({ id, label, min, max, step, initial }) => {
+             const slider = document.getElementById(id);
+             noUiSlider.create(slider, {
+                 start: initial,
+                 range: { min, max },
+                 step,
+                 tooltips: true,
+             });
+             sliderValues[label] = initial;
+             slider.noUiSlider.on('update', (values, handle) => {
+                 sliderValues[label] = parseFloat(values[handle]);
+                 document.getElementById(label).textContent = sliderValues[label];
+                 plotAM(sliderValues['fc-value'], sliderValues['fm-value'], sliderValues['Ac-value'], sliderValues['Am-value']);
+             });
+         });
+ 
+         // Initial plot
+         plotAM(50, 5, 1, 0.5);
+     </script>
+
+{% endblock %}
