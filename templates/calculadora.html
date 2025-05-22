@@ -40,8 +40,8 @@
 
 <br><br>
 {% if  resultado_no_cero %}
-<label for="resultado"> Resultado</label>
-<input type="text" name="resultado" value="{{resultado}}">
+<label for="resultado"> <h1 style="color: rgb(23, 133, 32);"><strong>Resultado</strong></h1></label>
+<input type="text" name="resultado" value="             {{resultado}}" style="border-radius: 30px;">
 {%else%}
 
 {%endif%}
@@ -82,7 +82,7 @@
                 <input type="number" name="tiempo" id="">
                 <label for="velocidad">Velocidad de transmision:</label>
                 <input type="number" name="velocidad" id="">
-                <input type="hidden" name="tiempo" value="1">
+                <input type="hidden" name="tamano" value="1">
                 <input type="hidden" name="seleccion" value="2">
                 <button type="submit">Enviar</button>
             </form>  

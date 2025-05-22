@@ -74,10 +74,10 @@ def calcular(request):
             print("resultado= ")
             tiempo_trasnmision=tamano_mensaje/velocidad_transmision
             resultado=tiempo_trasnmision
-        elif opcion==2:
+        elif opcion=="2":
             tamano_mensaje=velocidad_transmision*tiempo_trasnmision
             resultado=tamano_mensaje
-        elif opcion==3:
+        elif opcion=="3":
             velocidad_transmision=tamano_mensaje/tiempo_trasnmision
             resultado=velocidad_transmision
     if request.method == "GET":
