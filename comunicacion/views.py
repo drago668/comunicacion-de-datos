@@ -63,9 +63,10 @@ def fm(request):
 def calcular(request):
     print("solicitud post no  hecha")
     resultado=0
-   
+    s=""
     if request.method== "POST":
         print("solicitud post hecha")
+        
         tiempo_trasnmision= int(request.POST.get("tiempo"))
         tamano_mensaje= int(request.POST.get("tamano"))
         velocidad_transmision= int(request.POST.get("velocidad"))
@@ -74,17 +75,20 @@ def calcular(request):
             print("resultado= ")
             tiempo_trasnmision=tamano_mensaje/velocidad_transmision
             resultado=tiempo_trasnmision
+            s="s"
         elif opcion=="2":
             tamano_mensaje=velocidad_transmision*tiempo_trasnmision
             resultado=tamano_mensaje
+            s="bytes"
         elif opcion=="3":
             velocidad_transmision=tamano_mensaje/tiempo_trasnmision
             resultado=velocidad_transmision
+            s="bytes/segundo"
     if request.method == "GET":
         print("solicitud get hecha")
     print(resultado)
     resultado_no_cero = resultado != 0
-    return render(request,'calculadora.html',{"resultado":resultado, 'resultado_no_cero': resultado_no_cero})
+    return render(request,'calculadora.html',{"resultado":resultado, 'resultado_no_cero': resultado_no_cero,"s":s})
 
 
 def am(request):
